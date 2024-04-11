@@ -1,28 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { fetchOrders, deleteOrder } from '../api/ordersApi'; // Подключаем функцию deleteOrder из API
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+// OrdersTable.js
+import React from 'react';
+import { deleteOrder } from '../api/ordersApi';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@mui/material';
 
-const OrdersTable = () => {
-    const [orders, setOrders] = useState([]);
-
-    useEffect(() => {
-        fetchOrders()
-            .then(response => {
-                setOrders(response.data);
-            })
-            .catch(error => console.error("Ошибка при получении заказов:", error));
-    }, []);
-
+const OrdersTable = ({ orders, setOrders, openPreview }) => {
     const handleDeleteOrder = async (orderId) => {
         try {
-            await deleteOrder(orderId); // Вызываем функцию deleteOrder для удаления заказа
-            setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId)); // Обновляем список заказов после удаления
+            await deleteOrder(orderId);
+            setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
         } catch (error) {
             console.error("Ошибка при удалении заказа:", error);
         }
     };
 
-    
     return (
         <TableContainer component={Paper}>
             <Table aria-label="таблица заказов">
@@ -42,7 +32,22 @@ const OrdersTable = () => {
                             <TableCell align="right">{order.vehicle}</TableCell>
                             <TableCell align="right">{new Date(order.deliveryDate).toLocaleDateString()}</TableCell>
                             <TableCell align="right">{order.status}</TableCell>
-                            <TableCell align="right"><button onClick={() => handleDeleteOrder(order._id)}>Удалить</button></TableCell>
+                            <TableCell align="right">
+                                <Button 
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={() => handleDeleteOrder(order._id)}
+                                    style={{ marginRight: '10px' }}
+                                >
+                                    Удалить
+                                </Button>
+                                <Button
+                                    variant="outlined"
+                                    onClick={() => openPreview(order)}
+                                >
+                                    Предварительный просмотр
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
