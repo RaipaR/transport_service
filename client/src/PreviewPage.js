@@ -1,7 +1,10 @@
 // PreviewPage.js
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import { IconButton } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import PrintIcon from '@mui/icons-material/Print';
 import { saveAs } from 'file-saver';
 
 const PreviewPage = () => {
@@ -42,7 +45,7 @@ const PreviewPage = () => {
           <p>Исполнитель</p>
         </td>
         <td style="width: 505.578px;">
-          <p>ООО &laquo;ТЭК ОЛИМП&raquo;</p>
+          <p>{{executor}}</p>
         </td>
       </tr>
       <tr>
@@ -58,7 +61,7 @@ const PreviewPage = () => {
           <p>Маршрут</p>
         </td>
         <td style="width: 505.578px;">
-          <p>Птг. Забайкальск-г. Москва</p>
+          <p>{{routea}}-{{routeb}}</p>
         </td>
       </tr>
       <tr>
@@ -66,7 +69,7 @@ const PreviewPage = () => {
           <p>Сведения о грузе</p>
         </td>
         <td style="width: 505.578px;">
-          <p>спецтехника</p>
+          <p>{{cargo}}</p>
         </td>
       </tr>
       <tr>
@@ -74,7 +77,7 @@ const PreviewPage = () => {
           <p>Сведения о транспорте</p>
         </td>
         <td style="width: 505.578px;">
-          <p>фура</p>
+          <p>{{vehicle}}</p>
         </td>
       </tr>
       <tr>
@@ -90,7 +93,7 @@ const PreviewPage = () => {
           <p>Адрес загрузки и конт. лицо на загрузке</p>
         </td>
         <td style="width: 505.578px;">
-          <p>Птг. Забайкальск, Юрий 89144229803</p>
+          <p>{{routea}}, Юрий 89144229803</p>
         </td>
       </tr>
       <tr>
@@ -152,18 +155,29 @@ const handlePrint = () => {
 
 const generateContent = () => {
     return `<div id="contentToConvert">${transportApplicationTemplate
+        .replace('{{executor}}', order.executor)
         .replace('{{customer}}', order.customer)
-        .replace('{{deliveryDate}}', order.deliveryDate)}</div>`;
+        .replace('{{routea}}', order.routea)
+        .replace('{{routeb}}', order.routeb)
+        .replace('{{cargo}}', order.cargo)
+        .replace('{{vehicle}}', order.vehicle)
+        .replace('{{deliveryDate}}', order.deliveryDate)
+        .replace('{{routea}}', order.routea)}</div>`;
 };
 
-  return (
-    <div>
-      <div dangerouslySetInnerHTML={{ __html: generateContent(order) }} />
-      <Button onClick={() => navigate(-1)}>Вернуться назад</Button>
-      <Button onClick={saveToWord}>Сохранить в Word</Button>
-        <Button onClick={handlePrint}>Печать</Button>
-    </div>
-  );
+return (
+  <div>
+    <div dangerouslySetInnerHTML={{ __html: generateContent(order) }} />
+    <IconButton onClick={() => navigate(-1)}>
+      <ArrowBackIcon />
+    </IconButton>
+    <IconButton onClick={saveToWord}>
+      <SaveAltIcon />
+    </IconButton>
+    <IconButton onClick={handlePrint}>
+      <PrintIcon />
+    </IconButton>
+  </div>
+);
 };
-
 export default PreviewPage;

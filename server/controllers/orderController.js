@@ -26,7 +26,7 @@ const getOrderById = async (req, res) => {
 
 // Создать новый заказ
 const createOrder = async (req, res) => {
-  const { customer, vehicle, deliveryDate, status } = req.body;
+  const { customer, executor, routea, routeb, cargo, vehicle, deliveryDate, status } = req.body;
 
   if (!customer || !vehicle || !deliveryDate || !status) {
       return res.status(400).json({ message: 'Не все обязательные поля заполнены' });
@@ -35,6 +35,10 @@ const createOrder = async (req, res) => {
   try {
       const order = new Order({
           customer,
+          executor,
+          routea,
+          routeb,
+          cargo,
           vehicle,
           deliveryDate,
           status

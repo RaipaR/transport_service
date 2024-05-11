@@ -5,6 +5,22 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    executor: {
+        type: String,
+        required: true
+    },
+    routea: {
+        type: String,
+        required: true
+    },
+    routeb: {
+        type: String,
+        required: true
+    },
+    cargo: {
+        type: String,
+        required: true
+    },
     vehicle: {
         type: String,
         required: true
