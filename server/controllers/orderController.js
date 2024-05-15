@@ -1,88 +1,73 @@
+// orderController.js
+
+// Импорт моделей
 const Order = require('../models/Order');
+const LogEntry = require('../models/LogEntry');
 
-// Получить список всех заказов
-const getAllOrders = async (req, res) => {
+// Получение всех заказов
+exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find();
-        res.json(orders);
+        const orders = await Order.find(); // Получение всех заказов из базы данных
+        res.json(orders); // Отправка списка заказов в формате JSON клиенту
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Ошибка при получении заказов', error }); // Отправка сообщения об ошибке на сервере
     }
 };
 
-// Получить заказ по его ID
-const getOrderById = async (req, res) => {
+// Создание нового заказа
+exports.createOrder = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id);
-        if (order) {
-            res.json(order);
-        } else {
-            res.status(404).json({ message: 'Заказ не найден' });
-        }
+        const newOrder = new Order(req.body); // Создание нового заказа на основе данных из запроса
+        const savedOrder = await newOrder.save(); // Сохранение нового заказа в базе данных
+
+        // Создание записи в логе о создании заказа
+        const logEntry = new LogEntry({
+            user: req.session.user._id, // Идентификатор пользователя, создавшего заказ (в данном случае, из сессии)
+            action: 'CREATE', // Действие: создание
+            details: `Создан заказ: ${savedOrder.orderNumber}` // Детали: номер созданного заказа
+        });
+        await logEntry.save(); // Сохранение записи в логе
+
+        res.json(savedOrder); // Отправка информации о созданном заказе клиенту
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: 'Ошибка при создании заказа', error }); // Отправка сообщения об ошибке на сервере
     }
 };
 
-// Создать новый заказ
-const createOrder = async (req, res) => {
-  const { customer, executor, routea, routeb, cargo, vehicle, deliveryDate, status } = req.body;
-
-  if (!customer || !vehicle || !deliveryDate || !status) {
-      return res.status(400).json({ message: 'Не все обязательные поля заполнены' });
-  }
-
-  try {
-      const order = new Order({
-          customer,
-          executor,
-          routea,
-          routeb,
-          cargo,
-          vehicle,
-          deliveryDate,
-          status
-      });
-
-      const newOrder = await order.save();
-      res.status(201).json(newOrder);
-  } catch (error) {
-      res.status(500).json({ message: error.message });
-  }
-};
-
-// Обновить заказ по его ID
-const updateOrder = async (req, res) => {
+// Обновление заказа
+exports.updateOrder = async (req, res) => {
     try {
-        const updatedOrder = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (updatedOrder) {
-            res.json(updatedOrder);
-        } else {
-            res.status(404).json({ message: 'Заказ не найден' });
-        }
+        const updatedOrder = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true }); // Обновление заказа в базе данных
+
+        // Создание записи в логе об обновлении заказа
+        const logEntry = new LogEntry({
+            user: req.session.user._id, // Идентификатор пользователя, обновившего заказ (в данном случае, из сессии)
+            action: 'UPDATE', // Действие: обновление
+            details: `Обновлен заказ: ${updatedOrder.orderNumber}` // Детали: номер обновленного заказа
+        });
+        await logEntry.save(); // Сохранение записи в логе
+
+        res.json(updatedOrder); // Отправка информации о обновленном заказе клиенту
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(400).json({ message: 'Ошибка при обновлении заказа', error }); // Отправка сообщения об ошибке на сервере
     }
 };
 
-// Удалить заказ по его ID
-const deleteOrder = async (req, res) => {
+// Удаление заказа
+exports.deleteOrder = async (req, res) => {
     try {
-        const deletedOrder = await Order.findByIdAndDelete(req.params.id);
-        if (deletedOrder) {
-            res.json({ message: 'Заказ удален' });
-        } else {
-            res.status(404).json({ message: 'Заказ не найден' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
+        const deletedOrder = await Order.findByIdAndDelete(req.params.id); // Удаление заказа из базы данных
 
-module.exports = {
-    getAllOrders,
-    getOrderById,
-    createOrder,
-    updateOrder,
-    deleteOrder
+        // Создание записи в логе об удалении заказа
+        const logEntry = new LogEntry({
+            user: req.session.user._id, // Идентификатор пользователя, удалившего заказ (в данном случае, из сессии)
+            action: 'DELETE', // Действие: удаление
+            details: `Удален заказ: ${deletedOrder.orderNumber}` // Детали: номер удаленного заказа
+        });
+        await logEntry.save(); // Сохранение записи в логе
+
+        res.json({ message: 'Заказ успешно удален' }); // Отправка сообщения об успешном удалении заказа клиенту
+    } catch (error) {
+        res.status(500).json({ message: 'Ошибка при удалении заказа', error }); // Отправка сообщения об ошибке на сервере
+    }
 };

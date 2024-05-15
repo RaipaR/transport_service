@@ -1,11 +1,16 @@
+// stockRoutes.js
 const express = require('express');
 const router = express.Router();
-const { getStocks, createStock, updateStock, deleteStock } = require('../controllers/stockController');
+const stockController = require('../controllers/stockController');
+const multer = require('multer');
+const upload = multer({ dest: 'public/' });
 
-router.get('/', getStocks); // Убедитесь, что `getStocks` определен и доступен
-router.post('/', createStock); // Маршрут для создания записи на складе
-router.put('/:id', updateStock); // Маршрут для обновления записи на складе
-router.delete('/:id', deleteStock); // Маршрут для удаления записи на складе
-
+router.get('/', stockController.getAllStocks);
+router.post('/', stockController.createStock);
+router.put('/:id', stockController.updateStock);
+router.delete('/:id', stockController.deleteStock);
+router.get('/:id/photos', stockController.getStockPhotos);
+router.post('/:id/photos', upload.array('photos'), stockController.uploadStockPhotos);
+router.delete('/:id/photos/:photo', stockController.deleteStockPhoto);
 
 module.exports = router;

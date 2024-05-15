@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const session = require('express-session');
-
+const path = require('path'); // Добавьте этот импорт
 
 const app = express();
 
@@ -20,9 +20,9 @@ app.use(cors({
 
 // Импорт маршрутов
 const orderRoutes = require('./routes/orderRoutes');
-//const customerRoutes = require('./routes/customerRoutes');
 const stockRoutes = require('./routes/stockRoutes');
 const userRoutes = require('./routes/userRoutes');
+const logRoutes = require('./routes/logRoutes');
 
 app.use(bodyParser.json());
 
@@ -33,11 +33,13 @@ app.use(session({
   cookie: { maxAge: 24 * 60 * 60 * 1000 }
 }));
 
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 // Использование маршрутов
 app.use('/api/orders', orderRoutes);
-//app.use('/api/customers', customerRoutes);
 app.use('/api/stocks', stockRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/logs', logRoutes);
 
 // Стандартный маршрут для проверки, что сервер работает
 app.get('/', (req, res) => {
@@ -49,3 +51,5 @@ const port = process.env.PORT || 3001;
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
+

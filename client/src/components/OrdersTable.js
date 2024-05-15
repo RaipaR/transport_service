@@ -52,7 +52,7 @@ const OrdersTable = ({ orders, openPreview, openEdit, onDelete }) => {
     }) : filteredOrders;
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper}  style={{ width: '100%' }}>
                     <TextField
                         label="Поиск"
                         value={searchTerm}
@@ -65,9 +65,11 @@ const OrdersTable = ({ orders, openPreview, openEdit, onDelete }) => {
                         style={{ margin: '10px' }}
                         />
                     </IconButton>
-            <Table aria-label="таблица заказов">
+            <Table aria-label="таблица заказов" >
                 <TableHead>
                     <TableRow>
+                        <TableCell>Номер заказа</TableCell>
+                        <TableCell>Дата создания</TableCell>
                         <TableCell>
                             <TableSortLabel
                                 active={orderBy === 'customer'}
@@ -92,7 +94,7 @@ const OrdersTable = ({ orders, openPreview, openEdit, onDelete }) => {
                                 direction={order}
                                 onClick={() => handleRequestSort('routea')}
                             >
-                                Точка_А
+                                Пункт_А
                             </TableSortLabel>
                         </TableCell>
                         <TableCell>
@@ -101,7 +103,7 @@ const OrdersTable = ({ orders, openPreview, openEdit, onDelete }) => {
                                 direction={order}
                                 onClick={() => handleRequestSort('routeb')}
                             >
-                                Точка_Б
+                                Пункт_Б
                             </TableSortLabel>
                         </TableCell>
                         <TableCell>
@@ -119,7 +121,7 @@ const OrdersTable = ({ orders, openPreview, openEdit, onDelete }) => {
                                 direction={order}
                                 onClick={() => handleRequestSort('vehicle')}
                             >
-                                Транспортное_средство
+                                ТС
                             </TableSortLabel>
                         </TableCell>
                         <TableCell>
@@ -128,7 +130,7 @@ const OrdersTable = ({ orders, openPreview, openEdit, onDelete }) => {
                                 direction={order}
                                 onClick={() => handleRequestSort('deliveryDate')}
                             >
-                                Дата_загрузки
+                                Дата загрузки
                             </TableSortLabel>
                         </TableCell>
                         <TableCell>
@@ -146,6 +148,8 @@ const OrdersTable = ({ orders, openPreview, openEdit, onDelete }) => {
                 <TableBody>
                     {sortedOrders.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((order) => (
                         <TableRow key={order._id}>
+                            <TableCell>{order.orderNumber}</TableCell>
+                            <TableCell>{new Date(order.createDate).toLocaleDateString()}</TableCell>
                             <TableCell component="th" scope="row">{order.customer}</TableCell>
                             <TableCell >{order.executor}</TableCell>
                             <TableCell >{order.routea}</TableCell>

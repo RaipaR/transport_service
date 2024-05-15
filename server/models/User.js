@@ -5,7 +5,7 @@ const md5 = require('md5');
 const userSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  fullName: { type: String, required: true }, // Добавляем новое поле
+  fullName: { type: String, required: true },
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
 });
 
@@ -23,3 +23,5 @@ userSchema.pre('save', function(next) {
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
+
+
